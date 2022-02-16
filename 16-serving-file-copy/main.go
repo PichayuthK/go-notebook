@@ -3,6 +3,7 @@ package main
 import (
 	"io"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -19,5 +20,12 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func getImage(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "dog.jpeg")
+	f, err := os.Open("dog.jpeg")
+	if err != nil {
+		http.Error(w, "file not found", 404)
+		return
+	}
+	defer f.Close()
+
+	io.Copy(w, f)
 }
